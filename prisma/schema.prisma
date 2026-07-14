@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  EMPLOYEE
+  STAFF
+}
+
+enum TimesheetStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+model Company {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  contactEmail String?
+  contactPhone String?
+  createdAt    DateTime @default(now())
+
+  users User[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         Role     @default(EMPLOYEE)
+  jobTitle     String?
+  phone        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  timesheets         Timesheet[] @relation("UserTimesheets")
+  reviewedTimesheets Timesheet[] @relation("ReviewedTimesheets")
+}
+
+model Timesheet {
+  id            String          @id @default(cuid())
+  weekStartDate DateTime        @db.Date
+  status        TimesheetStatus @default(DRAFT)
+  submittedAt   DateTime?
+  reviewedAt    DateTime?
+  reviewComment String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  userId String
+  user   User   @relation("UserTimesheets", fields: [userId], references: [id], onDelete: Cascade)
+
+  reviewedById String?
+  reviewedBy   User?   @relation("ReviewedTimesheets", fields: [reviewedById], references: [id])
+
+  entries TimesheetEntry[]
+
+  @@unique([userId, weekStartDate])
+}
+
+model TimesheetEntry {
+  id          String   @id @default(cuid())
+  date        DateTime @db.Date
+  hours       Decimal  @default(0) @db.Decimal(4, 2)
+  description String?
+
+  timesheetId String
+  timesheet   Timesheet @relation(fields: [timesheetId], references: [id], onDelete: Cascade)
+
+  @@unique([timesheetId, date])
+}
