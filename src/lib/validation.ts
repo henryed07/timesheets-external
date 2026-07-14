@@ -55,3 +55,9 @@ export const AdminCreateUserSchema = z
     error: 'Select an existing company or enter a new one for an employee.',
     path: ['newCompanyName'],
   });
+
+export const CompanySchema = z.object({
+  name: z.string().trim().min(1, { error: 'Company name is required.' }),
+  contactEmail: z.string().trim().optional(),
+  contactPhone: z.string().trim().optional(),
+});

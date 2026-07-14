@@ -32,6 +32,9 @@ export default async function Nav() {
                     <Link href="/admin/users" className="hover:text-white transition-colors">
                       Manage Users
                     </Link>
+                    <Link href="/admin/companies" className="hover:text-white transition-colors">
+                      Manage Companies
+                    </Link>
                   </>
                 )}
               </div>

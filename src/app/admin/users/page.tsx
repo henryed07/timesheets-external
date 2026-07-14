@@ -1,9 +1,10 @@
 import { requireStaff } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
 import NewUserForm from './new-user-form';
+import UserRowActions from './user-row-actions';
 
 export default async function AdminUsersPage() {
-  await requireStaff();
+  const staff = await requireStaff();
 
   const [users, companies] = [
     await prisma.user.findMany({
@@ -26,6 +27,7 @@ export default async function AdminUsersPage() {
               <th className="px-6 py-3 font-medium">Email</th>
               <th className="px-6 py-3 font-medium">Role</th>
               <th className="px-6 py-3 font-medium">Company/Supplier</th>
+              <th className="px-6 py-3"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -33,6 +35,7 @@ export default async function AdminUsersPage() {
               <tr key={u.id}>
                 <td className="px-6 py-4 font-medium text-ink">
                   {u.firstName} {u.lastName}
+                  {u.id === staff.id && <span className="ml-2 text-xs text-gray-400">(you)</span>}
                 </td>
                 <td className="px-6 py-4 text-ink-soft">{u.email}</td>
                 <td className="px-6 py-4">
@@ -47,6 +50,9 @@ export default async function AdminUsersPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-ink-soft">{u.company?.name ?? '—'}</td>
+                <td className="px-6 py-4">
+                  {u.id !== staff.id && <UserRowActions userId={u.id} role={u.role} />}
+                </td>
               </tr>
             ))}
           </tbody>

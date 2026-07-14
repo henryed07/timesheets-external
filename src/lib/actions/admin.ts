@@ -5,8 +5,9 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { requireStaff } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
-import { AdminCreateUserSchema, ReviewSchema } from '@/lib/validation';
+import { AdminCreateUserSchema, CompanySchema, ReviewSchema } from '@/lib/validation';
 import type { FormState } from '@/lib/actions/auth';
+import type { Role } from '@/generated/prisma/enums';
 
 export async function reviewTimesheet(
   timesheetId: string,
@@ -94,4 +95,70 @@ export async function createUserByAdmin(_state: FormState, formData: FormData): 
 
   revalidatePath('/admin/users');
   return { message: `${firstName} ${lastName} was added as ${role === 'STAFF' ? 'staff' : 'an employee'}.` };
+}
+
+export async function deleteUser(userId: string, _formData: FormData) {
+  const staff = await requireStaff();
+  if (staff.id === userId) return;
+
+  await prisma.user.delete({ where: { id: userId } });
+  revalidatePath('/admin/users');
+}
+
+export async function setUserRole(userId: string, role: Role, _formData: FormData) {
+  const staff = await requireStaff();
+  if (staff.id === userId) return;
+
+  await prisma.user.update({ where: { id: userId }, data: { role } });
+  revalidatePath('/admin/users');
+}
+
+export async function createCompany(_state: FormState, formData: FormData): Promise<FormState> {
+  await requireStaff();
+
+  const validated = CompanySchema.safeParse({
+    name: formData.get('name'),
+    contactEmail: formData.get('contactEmail') || undefined,
+    contactPhone: formData.get('contactPhone') || undefined,
+  });
+  if (!validated.success) {
+    return { errors: validated.error.flatten().fieldErrors as Record<string, string[]> };
+  }
+
+  const existing = await prisma.company.findUnique({ where: { name: validated.data.name } });
+  if (existing) {
+    return { errors: { name: ['A company with that name already exists.'] } };
+  }
+
+  await prisma.company.create({ data: validated.data });
+  revalidatePath('/admin/companies');
+  return { message: `${validated.data.name} added.` };
+}
+
+export async function updateCompany(
+  companyId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  await requireStaff();
+
+  const validated = CompanySchema.safeParse({
+    name: formData.get('name'),
+    contactEmail: formData.get('contactEmail') || undefined,
+    contactPhone: formData.get('contactPhone') || undefined,
+  });
+  if (!validated.success) {
+    return { errors: validated.error.flatten().fieldErrors as Record<string, string[]> };
+  }
+
+  const existing = await prisma.company.findFirst({
+    where: { name: validated.data.name, NOT: { id: companyId } },
+  });
+  if (existing) {
+    return { errors: { name: ['Another company already uses that name.'] } };
+  }
+
+  await prisma.company.update({ where: { id: companyId }, data: validated.data });
+  revalidatePath('/admin/companies');
+  return { message: 'Saved.' };
 }
