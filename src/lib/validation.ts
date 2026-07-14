@@ -38,3 +38,20 @@ export const ReviewSchema = z.object({
   decision: z.enum(['APPROVED', 'REJECTED']),
   comment: z.string().trim().optional(),
 });
+
+export const AdminCreateUserSchema = z
+  .object({
+    firstName: z.string().trim().min(1, { error: 'First name is required.' }),
+    lastName: z.string().trim().min(1, { error: 'Last name is required.' }),
+    email: z.email({ error: 'Enter a valid email address.' }).trim(),
+    password: z.string().min(8, { error: 'Password must be at least 8 characters.' }),
+    role: z.enum(['EMPLOYEE', 'STAFF']),
+    companyId: z.string().trim().optional(),
+    newCompanyName: z.string().trim().optional(),
+    jobTitle: z.string().trim().optional(),
+    phone: z.string().trim().optional(),
+  })
+  .refine((data) => data.role !== 'EMPLOYEE' || data.companyId || data.newCompanyName, {
+    error: 'Select an existing company or enter a new one for an employee.',
+    path: ['newCompanyName'],
+  });

@@ -25,9 +25,14 @@ export default async function Nav() {
                   Profile
                 </Link>
                 {user.role === 'STAFF' && (
-                  <Link href="/admin" className="hover:text-white transition-colors">
-                    Review Dashboard
-                  </Link>
+                  <>
+                    <Link href="/admin" className="hover:text-white transition-colors">
+                      Review Dashboard
+                    </Link>
+                    <Link href="/admin/users" className="hover:text-white transition-colors">
+                      Manage Users
+                    </Link>
+                  </>
                 )}
               </div>
               <div className="hidden md:flex items-center gap-2 border-l border-white/15 pl-6">
