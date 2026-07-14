@@ -8,17 +8,17 @@ export default async function Nav() {
 
   return (
     <nav className="bg-ink text-white">
-      <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 text-[17px] font-semibold tracking-tight">
-          <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white">
+      <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between gap-4">
+        <Link href="/" className="flex shrink-0 items-center gap-3 text-[17px] font-semibold tracking-tight">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
             <Image src="/pa-consulting.png" alt="PA Consulting" width={32} height={32} className="h-full w-full object-cover" priority />
           </span>
-          Timesheets
+          <span className="hidden sm:inline">Timesheets</span>
         </Link>
-        <div className="flex items-center gap-6 text-sm">
+        <div className="flex items-center gap-4 text-sm">
           {user ? (
             <>
-              <div className="hidden sm:flex items-center gap-6 tracking-label text-[11px] text-gray-300">
+              <div className="hidden lg:flex items-center gap-4 whitespace-nowrap tracking-label text-[11px] text-gray-300">
                 <Link href="/timesheets" className="hover:text-white transition-colors">
                   My Timesheets
                 </Link>
@@ -39,8 +39,8 @@ export default async function Nav() {
                   </>
                 )}
               </div>
-              <div className="hidden md:flex items-center gap-2 border-l border-white/15 pl-6">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white">
+              <div className="hidden xl:flex items-center gap-2 whitespace-nowrap border-l border-white/15 pl-4">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white">
                   {user.firstName.charAt(0)}
                   {user.lastName.charAt(0)}
                 </div>
@@ -51,7 +51,7 @@ export default async function Nav() {
                   {user.company && <p className="text-[11px] text-gray-400">{user.company.name}</p>}
                 </div>
               </div>
-              <form action={logout}>
+              <form action={logout} className="shrink-0">
                 <button
                   className="rounded-full border border-white/25 px-3.5 py-1.5 text-[11px] tracking-label hover:border-brand hover:text-brand transition-colors"
                   type="submit"
