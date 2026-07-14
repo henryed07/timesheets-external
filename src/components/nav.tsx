@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { getCurrentUser } from '@/lib/dal';
 import { logout } from '@/lib/actions/auth';
@@ -8,10 +9,8 @@ export default async function Nav() {
   return (
     <nav className="bg-ink text-white">
       <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 text-[17px] font-semibold tracking-tight">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-brand" />
-          </span>
+        <Link href="/" className="flex items-center gap-3 text-[17px] font-semibold tracking-tight">
+          <Image src="/pa-consulting.png" alt="PA Consulting" width={32} height={32} className="h-8 w-8" priority />
           Timesheets
         </Link>
         <div className="flex items-center gap-6 text-sm">
