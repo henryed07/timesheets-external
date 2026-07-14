@@ -6,41 +6,60 @@ export default async function Nav() {
   const user = await getCurrentUser();
 
   return (
-    <nav className="bg-gray-900 text-white">
-      <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="font-semibold">
+    <nav className="bg-ink text-white">
+      <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2.5 text-[17px] font-semibold tracking-tight">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-brand" />
+          </span>
           Timesheets
         </Link>
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex items-center gap-6 text-sm">
           {user ? (
             <>
-              <Link href="/timesheets" className="hover:underline">
-                My Timesheets
-              </Link>
-              <Link href="/profile" className="hover:underline">
-                Profile
-              </Link>
-              {user.role === 'STAFF' && (
-                <Link href="/admin" className="hover:underline">
-                  Review Dashboard
+              <div className="hidden sm:flex items-center gap-6 tracking-label text-[11px] text-gray-300">
+                <Link href="/timesheets" className="hover:text-white transition-colors">
+                  My Timesheets
                 </Link>
-              )}
-              <span className="text-gray-300">
-                {user.firstName} {user.lastName}
-                {user.company ? ` · ${user.company.name}` : ''}
-              </span>
+                <Link href="/profile" className="hover:text-white transition-colors">
+                  Profile
+                </Link>
+                {user.role === 'STAFF' && (
+                  <Link href="/admin" className="hover:text-white transition-colors">
+                    Review Dashboard
+                  </Link>
+                )}
+              </div>
+              <div className="hidden md:flex items-center gap-2 border-l border-white/15 pl-6">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white">
+                  {user.firstName.charAt(0)}
+                  {user.lastName.charAt(0)}
+                </div>
+                <div className="leading-tight">
+                  <p className="text-white text-[13px]">
+                    {user.firstName} {user.lastName}
+                  </p>
+                  {user.company && <p className="text-[11px] text-gray-400">{user.company.name}</p>}
+                </div>
+              </div>
               <form action={logout}>
-                <button className="rounded border border-gray-500 px-2 py-1 hover:bg-gray-800" type="submit">
+                <button
+                  className="rounded-full border border-white/25 px-3.5 py-1.5 text-[11px] tracking-label hover:border-brand hover:text-brand transition-colors"
+                  type="submit"
+                >
                   Logout
                 </button>
               </form>
             </>
           ) : (
             <>
-              <Link href="/login" className="hover:underline">
+              <Link href="/login" className="tracking-label text-[11px] text-gray-300 hover:text-white transition-colors">
                 Login
               </Link>
-              <Link href="/register" className="hover:underline">
+              <Link
+                href="/register"
+                className="rounded-full bg-brand px-4 py-1.5 text-[11px] tracking-label font-medium text-white hover:bg-brand-dark transition-colors"
+              >
                 Register
               </Link>
             </>

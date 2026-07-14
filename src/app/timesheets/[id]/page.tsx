@@ -3,6 +3,9 @@ import { requireUser } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
 import StatusBadge from '@/components/status-badge';
 import { saveTimesheetDraft, submitTimesheet } from '@/lib/actions/timesheets';
+import { primaryButton, secondaryButton } from '@/components/form-styles';
+
+const WEEKDAY_FORMAT = new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' });
 
 export default async function TimesheetDetailPage({
   params,
@@ -29,83 +32,88 @@ export default async function TimesheetDetailPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-2xl font-semibold">
-          Week of {timesheet.weekStartDate.toISOString().slice(0, 10)}
-        </h1>
-        <StatusBadge status={timesheet.status} />
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <p className="tracking-label text-xs text-brand mb-2">Timesheet</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-ink">
+            Week of {timesheet.weekStartDate.toISOString().slice(0, 10)}
+          </h1>
+          <p className="mt-2 text-sm text-gray-500">
+            {timesheet.user.firstName} {timesheet.user.lastName} &middot; {timesheet.user.company?.name}
+          </p>
+        </div>
+        <div className="text-right">
+          <StatusBadge status={timesheet.status} />
+          <p className="mt-3 text-2xl font-semibold text-ink">{total}h</p>
+          <p className="text-xs tracking-label text-gray-400">Total</p>
+        </div>
       </div>
-      <p className="text-gray-600 mb-6">
-        {timesheet.user.firstName} {timesheet.user.lastName} &middot; {timesheet.user.company?.name}
-      </p>
 
       {timesheet.status === 'REJECTED' && timesheet.reviewComment && (
-        <div className="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-          <strong>Rejected:</strong> {timesheet.reviewComment}
+        <div className="mb-6 rounded-xl border border-ink/10 bg-ink px-4 py-3 text-sm text-white">
+          <span className="tracking-label text-xs text-white/60">Rejected</span>
+          <p className="mt-1">{timesheet.reviewComment}</p>
         </div>
       )}
 
       <form action={saveAction}>
-        <table className="w-full text-sm border-collapse mb-4">
-          <thead>
-            <tr className="text-left border-b border-gray-300">
-              <th className="py-2">Date</th>
-              <th className="py-2 w-24">Hours</th>
-              <th className="py-2">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {timesheet.entries.map((entry) => (
-              <tr key={entry.id} className="border-b border-gray-200">
-                <td className="py-2">{entry.date.toISOString().slice(0, 10)}</td>
-                <td className="py-2">
-                  <input
-                    type="number"
-                    step="0.25"
-                    min="0"
-                    max="24"
-                    name={`hours_${entry.id}`}
-                    defaultValue={Number(entry.hours)}
-                    disabled={!isEditable}
-                    className="w-20 rounded border border-gray-300 px-2 py-1 disabled:bg-gray-100"
-                  />
-                </td>
-                <td className="py-2">
-                  <input
-                    type="text"
-                    name={`description_${entry.id}`}
-                    defaultValue={entry.description ?? ''}
-                    disabled={!isEditable}
-                    placeholder="What did you work on?"
-                    className="w-full rounded border border-gray-300 px-2 py-1 disabled:bg-gray-100"
-                  />
-                </td>
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50/70 text-left text-[11px] tracking-label text-gray-500">
+                <th className="px-6 py-3 font-medium">Date</th>
+                <th className="w-28 px-6 py-3 font-medium">Hours</th>
+                <th className="px-6 py-3 font-medium">Description</th>
               </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td className="py-2 font-medium">Total</td>
-              <td className="py-2 font-medium">{total}</td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {timesheet.entries.map((entry) => (
+                <tr key={entry.id}>
+                  <td className="px-6 py-3 text-ink-soft">
+                    <span className="font-medium text-ink">{WEEKDAY_FORMAT.format(entry.date)}</span>{' '}
+                    {entry.date.toISOString().slice(0, 10)}
+                  </td>
+                  <td className="px-6 py-3">
+                    <input
+                      type="number"
+                      step="0.25"
+                      min="0"
+                      max="24"
+                      name={`hours_${entry.id}`}
+                      defaultValue={Number(entry.hours)}
+                      disabled={!isEditable}
+                      className="w-20 rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/15 disabled:bg-gray-50 disabled:text-gray-400 transition-colors"
+                    />
+                  </td>
+                  <td className="px-6 py-3">
+                    <input
+                      type="text"
+                      name={`description_${entry.id}`}
+                      defaultValue={entry.description ?? ''}
+                      disabled={!isEditable}
+                      placeholder="What did you work on?"
+                      className="w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/15 disabled:bg-gray-50 disabled:text-gray-400 transition-colors"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="border-t border-gray-200 bg-gray-50/70">
+                <td className="px-6 py-3 text-xs tracking-label text-gray-500">Total</td>
+                <td className="px-6 py-3 font-semibold text-ink">{total}h</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
 
         {isEditable && (
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              formAction={saveAction}
-              className="rounded border border-gray-400 px-4 py-2 text-sm font-medium"
-            >
+          <div className="mt-6 flex gap-3">
+            <button type="submit" formAction={saveAction} className={secondaryButton}>
               Save draft
             </button>
-            <button
-              type="submit"
-              formAction={submitAction}
-              className="rounded bg-gray-900 text-white px-4 py-2 text-sm font-medium"
-            >
+            <button type="submit" formAction={submitAction} className={`${primaryButton} w-auto`}>
               Submit for approval
             </button>
           </div>
@@ -113,7 +121,7 @@ export default async function TimesheetDetailPage({
       </form>
 
       {(timesheet.status === 'APPROVED' || timesheet.status === 'REJECTED') && timesheet.reviewedBy && (
-        <p className="text-sm text-gray-500 mt-4">
+        <p className="mt-6 text-sm text-gray-400">
           Reviewed by {timesheet.reviewedBy.firstName} {timesheet.reviewedBy.lastName} on{' '}
           {timesheet.reviewedAt?.toISOString().slice(0, 10)}
         </p>

@@ -2,10 +2,7 @@
 
 import { useActionState } from 'react';
 import { updateProfile } from '@/lib/actions/profile';
-
-const inputClass = 'w-full rounded border border-gray-300 px-3 py-2';
-const labelClass = 'block text-sm font-medium mb-1';
-const errorClass = 'text-sm text-red-600 mt-1';
+import { fieldInput, fieldLabel, fieldError, primaryButton } from '@/components/form-styles';
 
 type ProfileFormProps = {
   user: {
@@ -23,68 +20,66 @@ export default function ProfileForm({ user, companies }: ProfileFormProps) {
   const [state, action, pending] = useActionState(updateProfile, undefined);
 
   return (
-    <form action={action} className="space-y-4">
-      {state?.message && <p className="text-sm text-green-700">{state.message}</p>}
+    <form action={action} className="space-y-5">
+      {state?.message && (
+        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{state.message}</p>
+      )}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={labelClass} htmlFor="firstName">
+          <label className={fieldLabel} htmlFor="firstName">
             First name
           </label>
-          <input id="firstName" name="firstName" defaultValue={user.firstName} required className={inputClass} />
-          {state?.errors?.firstName && <p className={errorClass}>{state.errors.firstName}</p>}
+          <input id="firstName" name="firstName" defaultValue={user.firstName} required className={fieldInput} />
+          {state?.errors?.firstName && <p className={fieldError}>{state.errors.firstName}</p>}
         </div>
         <div>
-          <label className={labelClass} htmlFor="lastName">
+          <label className={fieldLabel} htmlFor="lastName">
             Last name
           </label>
-          <input id="lastName" name="lastName" defaultValue={user.lastName} required className={inputClass} />
-          {state?.errors?.lastName && <p className={errorClass}>{state.errors.lastName}</p>}
+          <input id="lastName" name="lastName" defaultValue={user.lastName} required className={fieldInput} />
+          {state?.errors?.lastName && <p className={fieldError}>{state.errors.lastName}</p>}
         </div>
       </div>
 
       <div>
-        <label className={labelClass} htmlFor="email">
+        <label className={fieldLabel} htmlFor="email">
           Email
         </label>
-        <input id="email" name="email" type="email" defaultValue={user.email} required className={inputClass} />
-        {state?.errors?.email && <p className={errorClass}>{state.errors.email}</p>}
+        <input id="email" name="email" type="email" defaultValue={user.email} required className={fieldInput} />
+        {state?.errors?.email && <p className={fieldError}>{state.errors.email}</p>}
       </div>
 
       <div>
-        <label className={labelClass} htmlFor="companyId">
+        <label className={fieldLabel} htmlFor="companyId">
           Company / supplier
         </label>
-        <select id="companyId" name="companyId" defaultValue={user.companyId} required className={inputClass}>
+        <select id="companyId" name="companyId" defaultValue={user.companyId} required className={fieldInput}>
           {companies.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
             </option>
           ))}
         </select>
-        {state?.errors?.companyId && <p className={errorClass}>{state.errors.companyId}</p>}
+        {state?.errors?.companyId && <p className={fieldError}>{state.errors.companyId}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={labelClass} htmlFor="jobTitle">
+          <label className={fieldLabel} htmlFor="jobTitle">
             Job title
           </label>
-          <input id="jobTitle" name="jobTitle" defaultValue={user.jobTitle} className={inputClass} />
+          <input id="jobTitle" name="jobTitle" defaultValue={user.jobTitle} className={fieldInput} />
         </div>
         <div>
-          <label className={labelClass} htmlFor="phone">
+          <label className={fieldLabel} htmlFor="phone">
             Phone
           </label>
-          <input id="phone" name="phone" defaultValue={user.phone} className={inputClass} />
+          <input id="phone" name="phone" defaultValue={user.phone} className={fieldInput} />
         </div>
       </div>
 
-      <button
-        disabled={pending}
-        type="submit"
-        className="w-full rounded bg-gray-900 text-white py-2 font-medium disabled:opacity-50"
-      >
-        Save changes
+      <button disabled={pending} type="submit" className={primaryButton}>
+        {pending ? 'Saving…' : 'Save changes'}
       </button>
     </form>
   );

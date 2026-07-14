@@ -1,7 +1,10 @@
 import { notFound } from 'next/navigation';
 import { requireStaff } from '@/lib/dal';
 import { prisma } from '@/lib/prisma';
+import StatusBadge from '@/components/status-badge';
 import ReviewForm from './review-form';
+
+const WEEKDAY_FORMAT = new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' });
 
 export default async function AdminReviewPage({
   params,
@@ -24,42 +27,60 @@ export default async function AdminReviewPage({
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-1">
-        {timesheet.user.firstName} {timesheet.user.lastName} &mdash; week of{' '}
-        {timesheet.weekStartDate.toISOString().slice(0, 10)}
-      </h1>
-      <p className="text-gray-600 mb-6">{timesheet.user.company?.name}</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <p className="tracking-label text-xs text-brand mb-2">Review</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-ink">
+            {timesheet.user.firstName} {timesheet.user.lastName}
+          </h1>
+          <p className="mt-2 text-sm text-gray-500">
+            {timesheet.user.company?.name} &middot; week of {timesheet.weekStartDate.toISOString().slice(0, 10)}
+          </p>
+        </div>
+        <div className="text-right">
+          <StatusBadge status={timesheet.status} />
+          <p className="mt-3 text-2xl font-semibold text-ink">{total}h</p>
+          <p className="text-xs tracking-label text-gray-400">Total</p>
+        </div>
+      </div>
 
-      <table className="w-full text-sm border-collapse mb-6">
-        <thead>
-          <tr className="text-left border-b border-gray-300">
-            <th className="py-2">Date</th>
-            <th className="py-2">Hours</th>
-            <th className="py-2">Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {timesheet.entries.map((entry) => (
-            <tr key={entry.id} className="border-b border-gray-200">
-              <td className="py-2">{entry.date.toISOString().slice(0, 10)}</td>
-              <td className="py-2">{Number(entry.hours)}</td>
-              <td className="py-2">{entry.description}</td>
+      <div className="mb-8 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-gray-200 bg-gray-50/70 text-left text-[11px] tracking-label text-gray-500">
+              <th className="px-6 py-3 font-medium">Date</th>
+              <th className="px-6 py-3 font-medium">Hours</th>
+              <th className="px-6 py-3 font-medium">Description</th>
             </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td className="py-2 font-medium">Total</td>
-            <td className="py-2 font-medium">{total}</td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {timesheet.entries.map((entry) => (
+              <tr key={entry.id}>
+                <td className="px-6 py-3 text-ink-soft">
+                  <span className="font-medium text-ink">{WEEKDAY_FORMAT.format(entry.date)}</span>{' '}
+                  {entry.date.toISOString().slice(0, 10)}
+                </td>
+                <td className="px-6 py-3 text-ink-soft">{Number(entry.hours)}h</td>
+                <td className="px-6 py-3 text-ink-soft">{entry.description}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-gray-200 bg-gray-50/70">
+              <td className="px-6 py-3 text-xs tracking-label text-gray-500">Total</td>
+              <td className="px-6 py-3 font-semibold text-ink">{total}h</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
       {timesheet.status === 'SUBMITTED' ? (
-        <ReviewForm timesheetId={timesheet.id} />
+        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+          <ReviewForm timesheetId={timesheet.id} />
+        </div>
       ) : (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-400">
           This timesheet has already been reviewed ({timesheet.status.toLowerCase()}).
         </p>
       )}

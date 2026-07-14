@@ -2,14 +2,15 @@
 
 import { useActionState } from 'react';
 import { createTimesheet } from '@/lib/actions/timesheets';
+import { fieldInput, fieldLabel, fieldError, primaryButton } from '@/components/form-styles';
 
 export default function NewTimesheetForm() {
   const [state, action, pending] = useActionState(createTimesheet, undefined);
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="space-y-5">
       <div>
-        <label className="block text-sm font-medium mb-1" htmlFor="weekStartDate">
+        <label className={fieldLabel} htmlFor="weekStartDate">
           Week starting (Monday)
         </label>
         <input
@@ -17,18 +18,12 @@ export default function NewTimesheetForm() {
           name="weekStartDate"
           type="date"
           required
-          className="w-full rounded border border-gray-300 px-3 py-2"
+          className={fieldInput}
         />
-        {state?.errors?.weekStartDate && (
-          <p className="text-sm text-red-600 mt-1">{state.errors.weekStartDate}</p>
-        )}
+        {state?.errors?.weekStartDate && <p className={fieldError}>{state.errors.weekStartDate}</p>}
       </div>
-      <button
-        disabled={pending}
-        type="submit"
-        className="w-full rounded bg-gray-900 text-white py-2 font-medium disabled:opacity-50"
-      >
-        Create
+      <button disabled={pending} type="submit" className={primaryButton}>
+        {pending ? 'Creating…' : 'Create'}
       </button>
     </form>
   );

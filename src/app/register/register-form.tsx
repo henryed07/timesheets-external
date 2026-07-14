@@ -3,10 +3,7 @@
 import Link from 'next/link';
 import { useActionState, useState } from 'react';
 import { register } from '@/lib/actions/auth';
-
-const inputClass = 'w-full rounded border border-gray-300 px-3 py-2';
-const labelClass = 'block text-sm font-medium mb-1';
-const errorClass = 'text-sm text-red-600 mt-1';
+import { fieldInput, fieldLabel, fieldError, primaryButton } from '@/components/form-styles';
 
 export default function RegisterForm({ companies }: { companies: { id: string; name: string }[] }) {
   const [state, action, pending] = useActionState(register, undefined);
@@ -15,55 +12,57 @@ export default function RegisterForm({ companies }: { companies: { id: string; n
   );
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="space-y-5">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={labelClass} htmlFor="firstName">
+          <label className={fieldLabel} htmlFor="firstName">
             First name
           </label>
-          <input id="firstName" name="firstName" required className={inputClass} />
-          {state?.errors?.firstName && <p className={errorClass}>{state.errors.firstName}</p>}
+          <input id="firstName" name="firstName" required className={fieldInput} />
+          {state?.errors?.firstName && <p className={fieldError}>{state.errors.firstName}</p>}
         </div>
         <div>
-          <label className={labelClass} htmlFor="lastName">
+          <label className={fieldLabel} htmlFor="lastName">
             Last name
           </label>
-          <input id="lastName" name="lastName" required className={inputClass} />
-          {state?.errors?.lastName && <p className={errorClass}>{state.errors.lastName}</p>}
+          <input id="lastName" name="lastName" required className={fieldInput} />
+          {state?.errors?.lastName && <p className={fieldError}>{state.errors.lastName}</p>}
         </div>
       </div>
 
       <div>
-        <label className={labelClass} htmlFor="email">
+        <label className={fieldLabel} htmlFor="email">
           Email
         </label>
-        <input id="email" name="email" type="email" required className={inputClass} />
-        {state?.errors?.email && <p className={errorClass}>{state.errors.email}</p>}
+        <input id="email" name="email" type="email" required className={fieldInput} />
+        {state?.errors?.email && <p className={fieldError}>{state.errors.email}</p>}
       </div>
 
       <div>
-        <label className={labelClass} htmlFor="password">
+        <label className={fieldLabel} htmlFor="password">
           Password
         </label>
-        <input id="password" name="password" type="password" required className={inputClass} />
-        {state?.errors?.password && <p className={errorClass}>{state.errors.password}</p>}
+        <input id="password" name="password" type="password" required className={fieldInput} />
+        {state?.errors?.password && <p className={fieldError}>{state.errors.password}</p>}
       </div>
 
-      <fieldset className="rounded border border-gray-200 p-3">
-        <legend className="text-sm font-medium px-1">Company / supplier</legend>
+      <fieldset className="rounded-xl border border-gray-200 p-4">
+        <legend className="px-1 text-xs font-medium tracking-label text-gray-500">Company / supplier</legend>
         {companies.length > 0 && (
-          <div className="flex gap-4 text-sm mb-3">
-            <label className="flex items-center gap-1">
+          <div className="mb-3 flex gap-5 text-sm text-ink-soft">
+            <label className="flex items-center gap-1.5">
               <input
                 type="radio"
+                className="accent-brand"
                 checked={companyMode === 'existing'}
                 onChange={() => setCompanyMode('existing')}
               />
               Existing company
             </label>
-            <label className="flex items-center gap-1">
+            <label className="flex items-center gap-1.5">
               <input
                 type="radio"
+                className="accent-brand"
                 checked={companyMode === 'new'}
                 onChange={() => setCompanyMode('new')}
               />
@@ -72,7 +71,7 @@ export default function RegisterForm({ companies }: { companies: { id: string; n
           </div>
         )}
         {companyMode === 'existing' && companies.length > 0 ? (
-          <select name="companyId" className={inputClass} defaultValue="">
+          <select name="companyId" className={fieldInput} defaultValue="">
             <option value="" disabled>
               Select a company&hellip;
             </option>
@@ -86,38 +85,34 @@ export default function RegisterForm({ companies }: { companies: { id: string; n
           <input
             name="newCompanyName"
             placeholder="Company / supplier name"
-            className={inputClass}
+            className={fieldInput}
           />
         )}
-        {state?.errors?.newCompanyName && <p className={errorClass}>{state.errors.newCompanyName}</p>}
+        {state?.errors?.newCompanyName && <p className={fieldError}>{state.errors.newCompanyName}</p>}
       </fieldset>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={labelClass} htmlFor="jobTitle">
+          <label className={fieldLabel} htmlFor="jobTitle">
             Job title
           </label>
-          <input id="jobTitle" name="jobTitle" className={inputClass} />
+          <input id="jobTitle" name="jobTitle" className={fieldInput} />
         </div>
         <div>
-          <label className={labelClass} htmlFor="phone">
+          <label className={fieldLabel} htmlFor="phone">
             Phone
           </label>
-          <input id="phone" name="phone" className={inputClass} />
+          <input id="phone" name="phone" className={fieldInput} />
         </div>
       </div>
 
-      <button
-        disabled={pending}
-        type="submit"
-        className="w-full rounded bg-gray-900 text-white py-2 font-medium disabled:opacity-50"
-      >
-        Register
+      <button disabled={pending} type="submit" className={primaryButton}>
+        {pending ? 'Creating account…' : 'Register'}
       </button>
 
-      <p className="text-sm">
+      <p className="text-center text-sm text-gray-500">
         Already have an account?{' '}
-        <Link href="/login" className="underline">
+        <Link href="/login" className="font-medium text-brand hover:text-brand-dark">
           Log in
         </Link>
       </p>
