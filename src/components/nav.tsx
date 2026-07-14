@@ -10,9 +10,7 @@ export default async function Nav() {
     <nav className="bg-ink text-white">
       <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between gap-4">
         <Link href="/" className="flex shrink-0 items-center gap-3 text-[17px] font-semibold tracking-tight">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
-            <Image src="/pa-consulting.png" alt="PA Consulting" width={32} height={32} className="h-full w-full object-cover" priority />
-          </span>
+          <Image src="/pa-consulting.png" alt="PA Consulting" width={32} height={32} className="h-8 w-8 shrink-0" priority />
           <span className="hidden sm:inline">Timesheets</span>
         </Link>
         <div className="flex items-center gap-4 text-sm">
